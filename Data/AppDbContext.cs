@@ -16,115 +16,62 @@ namespace bussijaama_haaldus_projekt_u2_api.Data
         {
             base.OnModelCreating(builder);
 
-            // Seed маршрутов (оставляем как было)
-            builder.Entity<Route>().HasData(
-                new Route
-                {
-                    Id = 1,
-                    Number = "BUS-1024",
-                    Company = "NordBus",
-                    DepartureCity = "Tallinn",
-                    DestinationCity = "Tartu",
-                    DepartureStation = "Tallinn Bus Station",
-                    DestinationStation = "Tartu Bus Station",
-                    DepartureTime = new DateTime(2025, 3, 10, 08, 00, 0),
-                    ArrivalTime = new DateTime(2025, 3, 10, 10, 30, 0),
-                    Price = 12.50m
-                },
-                new Route
-                {
-                    Id = 2,
-                    Number = "BUS-1024",
-                    Company = "NordBus",
-                    DepartureCity = "Tallinn",
-                    DestinationCity = "Tartu",
-                    DepartureStation = "Tallinn Bus Station",
-                    DestinationStation = "Tartu Bus Station",
-                    DepartureTime = new DateTime(2025, 3, 10, 14, 15, 0),
-                    ArrivalTime = new DateTime(2025, 3, 10, 16, 45, 0),
-                    Price = 12.50m
-                },
-                new Route
-                {
-                    Id = 3,
-                    Number = "BUS-2031",
-                    Company = "Baltic Express",
-                    DepartureCity = "Tallinn",
-                    DestinationCity = "Riga",
-                    DepartureStation = "Tallinn Bus Station",
-                    DestinationStation = "Riga Central Station",
-                    DepartureTime = new DateTime(2025, 3, 11, 07, 45, 0),
-                    ArrivalTime = new DateTime(2025, 3, 11, 12, 00, 0),
-                    Price = 25.00m
-                },
-                new Route
-                {
-                    Id = 4,
-                    Number = "BUS-2031",
-                    Company = "Baltic Express",
-                    DepartureCity = "Tallinn",
-                    DestinationCity = "Riga",
-                    DepartureStation = "Tallinn Bus Station",
-                    DestinationStation = "Riga Central Station",
-                    DepartureTime = new DateTime(2025, 3, 11, 15, 30, 0),
-                    ArrivalTime = new DateTime(2025, 3, 11, 19, 45, 0),
-                    Price = 25.00m
-                },
-                new Route
-                {
-                    Id = 5,
-                    Number = "BUS-3310",
-                    Company = "EuroRoad",
-                    DepartureCity = "Tallinn",
-                    DestinationCity = "Vilnius",
-                    DepartureStation = "Tallinn Bus Station",
-                    DestinationStation = "Vilnius Bus Terminal",
-                    DepartureTime = new DateTime(2025, 3, 12, 06, 00, 0),
-                    ArrivalTime = new DateTime(2025, 3, 12, 14, 00, 0),
-                    Price = 35.50m
-                },
-                new Route
-                {
-                    Id = 6,
-                    Number = "BUS-445",
-                    Company = "Lux Express",
-                    DepartureCity = "Tartu",
-                    DestinationCity = "Tallinn",
-                    DepartureStation = "Tartu Bus Station",
-                    DestinationStation = "Tallinn Bus Station",
-                    DepartureTime = new DateTime(2025, 3, 10, 11, 00, 0),
-                    ArrivalTime = new DateTime(2025, 3, 10, 13, 30, 0),
-                    Price = 12.50m
-                },
-                new Route
-                {
-                    Id = 7,
-                    Number = "BUS-778",
-                    Company = "Simple Express",
-                    DepartureCity = "Riga",
-                    DestinationCity = "Tallinn",
-                    DepartureStation = "Riga Central Station",
-                    DestinationStation = "Tallinn Bus Station",
-                    DepartureTime = new DateTime(2025, 3, 11, 13, 00, 0),
-                    ArrivalTime = new DateTime(2025, 3, 11, 17, 15, 0),
-                    Price = 22.00m
-                },
-                new Route
-                {
-                    Id = 8,
-                    Number = "BUS-990",
-                    Company = "Lux Express",
-                    DepartureCity = "Tallinn",
-                    DestinationCity = "Pärnu",
-                    DepartureStation = "Tallinn Bus Station",
-                    DestinationStation = "Pärnu Bus Terminal",
-                    DepartureTime = new DateTime(2025, 3, 13, 09, 30, 0),
-                    ArrivalTime = new DateTime(2025, 3, 13, 11, 20, 0),
-                    Price = 9.90m
-                }
-            );
+            builder.Entity<Route>().HasData();
 
-            // Создаём админа при старте
+            var routes = new List<Route>();
+            var random = new Random(42);
+
+            var companies = new[] { "Lux Express", "NordBus", "Baltic Shuttle", "Ecolines", "FlixBus" };
+            var cities = new (string From, string To, string FromStation, string ToStation, decimal BasePrice, int BaseMinutes)[]
+                {
+                    ("Tallinn",  "Tartu",     "Tallinn Bus Station",      "Tartu Bus Station",      12.50m, 150),
+                    ("Tallinn",  "Pärnu",     "Tallinn Bus Station",      "Pärnu Bus Station",      10.00m, 110),
+                    ("Tallinn",  "Narva",     "Tallinn Bus Station",      "Narva Bus Station",      11.00m, 160),
+                    ("Tallinn",  "Viljandi",  "Tallinn Bus Station",      "Viljandi Bus Station",   13.00m, 140),
+                    ("Tartu",    "Tallinn",   "Tartu Bus Station",        "Tallinn Bus Station",    12.50m, 150),
+                    ("Pärnu",    "Tallinn",   "Pärnu Bus Station",        "Tallinn Bus Station",    10.00m, 110),
+                    ("Riga",     "Tallinn",   "Riga Central Station",     "Tallinn Bus Station",    18.00m, 240),
+                    ("Tallinn",  "Riga",      "Tallinn Bus Station",      "Riga Central Station",   18.00m, 240),
+                    ("Tartu",    "Riga",      "Tartu Bus Station",        "Riga Central Station",   22.00m, 300)
+                };
+
+            int id = 1;
+            var startDate = DateTime.Today.AddHours(6);
+
+            for (int day = 0; day < 5; day++)
+            {
+                var currentDay = startDate.AddDays(day);
+
+                foreach (var route in cities)
+                {
+                    int tripsPerDay = random.Next(3, 6);
+
+                    for (int i = 0; i < tripsPerDay; i++)
+                    {
+                        var departure = currentDay.AddHours(7 + i * 3 + random.Next(-60, 61));
+                        var durationMinutes = route.BaseMinutes + random.Next(-20, 21);
+                        var arrival = departure.AddMinutes(durationMinutes);
+
+                        var price = route.BasePrice + (decimal)random.Next(-300, 401) / 100;
+
+                        routes.Add(new Route
+                        {
+                            Id = id++,
+                            Number = $"BUS-{random.Next(1000, 9999)}",
+                            Company = companies[random.Next(companies.Length)],
+                            DepartureCity = route.From,
+                            DestinationCity = route.To,
+                            DepartureStation = route.FromStation,
+                            DestinationStation = route.ToStation,
+                            DepartureTime = departure,
+                            ArrivalTime = arrival,
+                            Price = Math.Round(price, 2)
+                        });
+                    }
+                }
+            }
+
+            builder.Entity<Route>().HasData(routes.Take(30));
             var adminId = 1;
             var admin = new AppUser
             {
@@ -156,7 +103,7 @@ namespace bussijaama_haaldus_projekt_u2_api.Data
             );
 
             builder.Entity<IdentityUserRole<int>>().HasData(
-                new IdentityUserRole<int> { RoleId = 1, UserId = adminId } // admin имеет роль Admin
+                new IdentityUserRole<int> { RoleId = 1, UserId = adminId }
             );
         }
     }
